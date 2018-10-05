@@ -10,7 +10,7 @@
             "configs": {
                 "type": "SiddhiStoreDataProvider",
                 "config": {
-                    "siddhiApp": "@App:name(\"HTTPAnalytics\") @store( type=\"rdbms\",datasource=\"HTTP_ANALYTICS_DB\") define table ServiceTable( serverName string, serviceName string);",
+                    "siddhiApp": "@App:name(\"HTTPAnalytics\") @store( type=\"rdbms\",datasource=\"HTTP_ANALYTICS_DB\") define table ServiceTable( cellName string, serverName string, serviceName string, serviceMethod string);",
                     "queryData": {
                         "query": "from ServiceTable select *"
                     },

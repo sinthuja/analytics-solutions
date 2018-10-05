@@ -210,12 +210,18 @@ class HTTPAnalyticsRequestCountFilter extends Widget {
             width: this.props.glContainer.width,
             height: this.props.glContainer.height,
             perspective: 0,
+            cells:[],
+            cellOptions: [],
+            selectedCellValues: null,
             servers: [],
             serverOptions: [],
             selectedServerValues: null,
             services: [],
             serviceOptions: [],
             selectedServiceValues: null,
+            methods: [],
+            methodOptions: [],
+            selectedMethodValues: null,
             selectedSingleServiceValue: null,
             faultyProviderConf: false,
         };
@@ -247,16 +253,28 @@ class HTTPAnalyticsRequestCountFilter extends Widget {
      * @param data
      */
     handleDataReceived(data) {
-        let servers = []; let services = [];
+        let cells = []; let servers = []; let services = []; let methods = [];
         data.data.forEach((dataUnit) => {
-            servers.push(dataUnit[0]);
-            services.push(dataUnit[1]);
+            cells.push(dataUnit[0]);
+            servers.push(dataUnit[1]);
+            services.push(dataUnit[2]);
+            methods.push(dataUnit[3]);
         });
+        cells.push('All');
         servers.push('All');
         services.push('All');
+        methods.push('All');
 
+        cells = cells.filter((v, i, a) => a.indexOf(v) === i);
         servers = servers.filter((v, i, a) => a.indexOf(v) === i);
         services = services.filter((v, i, a) => a.indexOf(v) === i);
+        methods = methods.filter((v, i, a) => a.indexOf(v) === i);
+
+        const cellOptions = cells.map(cell => ({
+            value: cell,
+            label: cell,
+            disabled: false,
+        }));
 
         const serverOptions = servers.map(server => ({
             value: server,
@@ -270,13 +288,26 @@ class HTTPAnalyticsRequestCountFilter extends Widget {
             disabled: false,
         }));
 
+
+        const methodOptions = methods.map(method => ({
+            value: method,
+            label: method,
+            disabled: false,
+        }));
+
         this.setState({
+            cells,
             servers,
             services,
+            methods,
+            cellOptions,
             serviceOptions,
             serverOptions,
+            methodOptions,
+            selectedCellValues: allOption,
             selectedServerValues: allOption,
             selectedServiceValues: allOption,
+            selectedMethodValues: allOption,
             selectedSingleServiceValue: allOption[0],
         }, this.publishUpdate);
     }
@@ -292,21 +323,25 @@ class HTTPAnalyticsRequestCountFilter extends Widget {
         let selectedValues;
 
         if (name === 0) {
+            options = this.state.cells;
+            selectedOptionLabelName = 'selectedCellValues';
+            selectedOptionsName = 'cellOptions';
+            selectedValues = values;
+        } else if (name === 1) {
             options = this.state.services;
             selectedOptionLabelName = 'selectedServiceValues';
             selectedOptionsName = 'serviceOptions';
             selectedValues = values;
-        } else if (name === 1) {
+        } else if (name === 2){
             options = this.state.servers;
             selectedOptionLabelName = 'selectedServerValues';
             selectedOptionsName = 'serverOptions';
             selectedValues = values;
-        } else {
-            options = this.state.services;
-            selectedOptionLabelName = 'selectedSingleServiceValue';
-            selectedOptionsName = 'serviceOptions';
-            selectedValues = new Array(1);
-            selectedValues[0] = values;
+        } else{
+            options = this.state.methods;
+            selectedOptionLabelName = 'selectedMethodValues';
+            selectedOptionsName = 'methodOptions';
+            selectedValues = values;
         }
 
         let updatedOptions;
@@ -365,7 +400,8 @@ class HTTPAnalyticsRequestCountFilter extends Widget {
                                 value={this.state.perspective}
                                 onChange={(evt, value) => this.setState({ perspective: value }, this.publishUpdate)}
                             >
-                                <Tab label="Server" />
+                                <Tab label="Cell" />
+                                <Tab label="Pods" />
                                 <Tab label="Service" />
                                 <Tab label="Method" />
                             </Tabs>
@@ -375,9 +411,9 @@ class HTTPAnalyticsRequestCountFilter extends Widget {
                                     && (
                                         <TextField
                                             fullWidth
-                                            value={this.state.selectedServiceValues}
+                                            value={this.state.selectedCellValues}
                                             onChange={this.handleChange(0)}
-                                            placeholder="Filter by Service"
+                                            placeholder="Filter by Cell"
                                             label=""
                                             InputLabelProps={{
                                                 shrink: false,
@@ -401,9 +437,9 @@ class HTTPAnalyticsRequestCountFilter extends Widget {
                                     && (
                                         <TextField
                                             fullWidth
-                                            value={this.state.selectedServerValues}
+                                            value={this.state.selectedServiceValues}
                                             onChange={this.handleChange(1)}
-                                            placeholder="Filter by Server"
+                                            placeholder="Filter by Pod"
                                             label=""
                                             InputLabelProps={{
                                                 shrink: false,
@@ -427,9 +463,35 @@ class HTTPAnalyticsRequestCountFilter extends Widget {
                                     && (
                                         <TextField
                                             fullWidth
-                                            value={this.state.selectedSingleServiceValue}
+                                            value={this.state.selectedServerValues}
                                             onChange={this.handleChange(2)}
-                                            placeholder="Choose a Service"
+                                            placeholder="Filter by Server"
+                                            label=""
+                                            InputLabelProps={{
+                                                shrink: false,
+                                            }}
+                                            InputProps={{
+                                                inputComponent: SelectWrapped,
+                                                inputProps: {
+                                                    classes,
+                                                    isMulti: true,
+                                                    simpleValue: true,
+                                                    options: this.state.serviceOptions,
+                                                    muiTheme: this.props.muiTheme,
+                                                    isClearable: true,
+                                                },
+                                            }}
+                                        />
+                                    )
+                                }
+                                {
+                                    this.state.perspective === 3
+                                    && (
+                                        <TextField
+                                            fullWidth
+                                            value={this.state.selectedSingleServiceValue}
+                                            onChange={this.handleChange(3)}
+                                            placeholder="Filter by Method"
                                             label=""
                                             InputLabelProps={{
                                                 shrink: false,
@@ -440,7 +502,7 @@ class HTTPAnalyticsRequestCountFilter extends Widget {
                                                     classes,
                                                     isMulti: false,
                                                     simpleValue: true,
-                                                    options: this.state.serviceOptions,
+                                                    options: this.state.methodOptions,
                                                     muiTheme: this.props.muiTheme,
                                                     isClearable: false,
                                                 },
