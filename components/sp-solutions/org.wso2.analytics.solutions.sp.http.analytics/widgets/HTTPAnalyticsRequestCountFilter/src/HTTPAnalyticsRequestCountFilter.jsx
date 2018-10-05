@@ -424,7 +424,7 @@ class HTTPAnalyticsRequestCountFilter extends Widget {
                                                     classes,
                                                     isMulti: true,
                                                     simpleValue: true,
-                                                    options: this.state.serviceOptions,
+                                                    options: this.state.cellOptions,
                                                     muiTheme: this.props.muiTheme,
                                                     isClearable: true,
                                                 },
@@ -437,7 +437,7 @@ class HTTPAnalyticsRequestCountFilter extends Widget {
                                     && (
                                         <TextField
                                             fullWidth
-                                            value={this.state.selectedServiceValues}
+                                            value={this.state.selectedServerValues}
                                             onChange={this.handleChange(1)}
                                             placeholder="Filter by Pod"
                                             label=""
@@ -463,9 +463,9 @@ class HTTPAnalyticsRequestCountFilter extends Widget {
                                     && (
                                         <TextField
                                             fullWidth
-                                            value={this.state.selectedServerValues}
+                                            value={this.state.selectedServiceValues}
                                             onChange={this.handleChange(2)}
-                                            placeholder="Filter by Server"
+                                            placeholder="Filter by Service"
                                             label=""
                                             InputLabelProps={{
                                                 shrink: false,
@@ -489,7 +489,7 @@ class HTTPAnalyticsRequestCountFilter extends Widget {
                                     && (
                                         <TextField
                                             fullWidth
-                                            value={this.state.selectedSingleServiceValue}
+                                            value={this.state.selectedMethodValues}
                                             onChange={this.handleChange(3)}
                                             placeholder="Filter by Method"
                                             label=""
@@ -500,11 +500,11 @@ class HTTPAnalyticsRequestCountFilter extends Widget {
                                                 inputComponent: SelectWrapped,
                                                 inputProps: {
                                                     classes,
-                                                    isMulti: false,
+                                                    isMulti: true,
                                                     simpleValue: true,
                                                     options: this.state.methodOptions,
                                                     muiTheme: this.props.muiTheme,
-                                                    isClearable: false,
+                                                    isClearable: true,
                                                 },
                                             }}
                                         />
