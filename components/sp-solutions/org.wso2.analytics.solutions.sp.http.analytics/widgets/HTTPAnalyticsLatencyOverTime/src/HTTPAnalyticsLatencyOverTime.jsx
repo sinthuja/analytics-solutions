@@ -48,7 +48,7 @@ const chartConfigTemplate = {
     gridColor: '#5d6e77',
     brush: true,
     xAxisLabel: 'Time',
-    yAxisLabel: 'Average Latency',
+    yAxisLabel: 'Average Latency (ms)',
     append: false,
     timeStep: 'month',
     tipTimeFormat: '%Y-%m-%d %H:%M:%S',

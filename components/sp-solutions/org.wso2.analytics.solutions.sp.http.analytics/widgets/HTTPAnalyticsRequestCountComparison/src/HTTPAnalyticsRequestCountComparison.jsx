@@ -36,11 +36,9 @@ const chartConfigTemplate = {
                 fill: '#00e1d6',
                 color: 'serverName',
                 style:
-                    {strokeWidth: 2, markRadius: 3},
+                    {strokeWidth: 1, markRadius: 2},
             },
         ],
-    legend: true,
-    animate: false,
     style: {
         legendTitleColor: '#5d6e77',
         legendTextColor: '#5d6e77',

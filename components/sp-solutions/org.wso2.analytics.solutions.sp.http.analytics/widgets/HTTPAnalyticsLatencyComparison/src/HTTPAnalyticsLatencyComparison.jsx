@@ -57,7 +57,7 @@ const chartConfigTemplate = {
     gridColor: '#5d6e77',
     brush: false,
     xAxisLabel: 'Servers',
-    yAxisLabel: 'Average Latency(ms)',
+    yAxisLabel: 'Average Latency (ms)',
     append: false,
 };
 
