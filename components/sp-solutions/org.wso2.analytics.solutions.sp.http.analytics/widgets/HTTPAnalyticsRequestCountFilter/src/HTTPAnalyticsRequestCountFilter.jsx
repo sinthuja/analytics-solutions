@@ -241,8 +241,10 @@ class HTTPAnalyticsRequestCountFilter extends Widget {
     publishUpdate() {
         const filterOptions = {
             perspective: this.state.perspective,
+            selectedCellValues: this.state.selectedCellValues,
             selectedServerValues: this.state.selectedServerValues,
             selectedServiceValues: this.state.selectedServiceValues,
+            selectedMethodValues: this.state.selectedMethodValues,
             selectedSingleServiceValue: this.state.selectedSingleServiceValue,
         };
         super.publish(filterOptions);

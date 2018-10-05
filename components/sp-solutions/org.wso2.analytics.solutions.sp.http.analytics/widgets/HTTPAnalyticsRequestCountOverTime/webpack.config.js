@@ -64,16 +64,6 @@ module.exports = {
                 test: /\.scss$/,
                 use: [{ loader: 'style-loader' }, { loader: 'css-loader' }, { loader: 'sass-loader' }],
             },
-            {
-                test: /\.jsx?$/,
-                loader: 'eslint-loader',
-                enforce: 'pre',
-                exclude: /node_modules/,
-                options: {
-                    failOnWarning: false,
-                    failOnError: true,
-                },
-            },
         ],
     },
     plugins: [

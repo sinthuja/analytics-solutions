@@ -69,16 +69,6 @@ module.exports = {
                 use: [
                     { loader: 'json-loader' }],
             },
-            {
-                test: /\.jsx?$/,
-                loader: 'eslint-loader',
-                enforce: 'pre',
-                exclude: /node_modules/,
-                options: {
-                    failOnWarning: false,
-                    failOnError: true,
-                },
-            },
         ],
     },
     plugins: [

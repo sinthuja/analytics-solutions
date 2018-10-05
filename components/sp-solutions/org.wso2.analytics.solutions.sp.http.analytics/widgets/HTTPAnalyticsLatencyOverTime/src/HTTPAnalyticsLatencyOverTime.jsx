@@ -131,8 +131,10 @@ class HTTPAnalyticsLatencyOverTime extends Widget {
         if (typeof receivedMsg.perspective === 'number') {
             this.setState({
                 perspective: receivedMsg.perspective,
+                selectedCellValues: receivedMsg.selectedCellValues,
                 selectedServerValues: receivedMsg.selectedServerValues,
                 selectedServiceValues: receivedMsg.selectedServiceValues,
+                selectedMethodValues: receivedMsg.selectedMethodValues,
                 selectedSingleServiceValue: receivedMsg.selectedSingleServiceValue,
             }, this.assembleQuery);
         } else {
@@ -144,6 +146,67 @@ class HTTPAnalyticsLatencyOverTime extends Widget {
         }
     }
 
+    getFilterQuery(){
+        let filterCondition = "(";
+        if (!this.state.selectedCellValues.some(value => value.value === 'All')
+            && this.state.selectedCellValues.length !== 0) {
+            this.state.selectedCellValues.forEach((value) => {
+                if (filterCondition !== "("){
+                    filterCondition += " or ";
+                }
+                filterCondition += "cellName=='" + value.value +"'";
+            });
+            filterCondition += ")";
+        }
+
+        if (!this.state.selectedServerValues.some(value => value.value === 'All')
+            && this.state.selectedServerValues.length !== 0) {
+            if (filterCondition !== "("){
+                filterCondition += " and (";
+            }
+            this.state.selectedServerValues.forEach((value) => {
+                if (filterCondition !== ""){
+                    filterCondition += " or ";
+                }
+                filterCondition += "serverName=='" + value.value + "'";
+            });
+            filterCondition += ")";
+        }
+
+        if (!this.state.selectedServiceValues.some(value => value.value === 'All')
+            && this.state.selectedServiceValues.length !== 0) {
+            if (filterCondition !== "("){
+                filterCondition += " and (";
+            }
+            this.state.selectedServiceValues.forEach((value) => {
+                if (filterCondition !== ""){
+                    filterCondition += " or ";
+                }
+                filterCondition += "serviceName=='" + value.value + "'";
+            });
+            filterCondition += ")";
+        }
+
+        if (!this.state.selectedMethodValues.some(value => value.value === 'All')
+            && this.state.selectedMethodValues.length !== 0) {
+            if (filterCondition !== "("){
+                filterCondition += " and (";
+            }
+            this.state.selectedMethodValues.forEach((value) => {
+                if (filterCondition !== ""){
+                    filterCondition += " or ";
+                }
+                filterCondition += "serviceName=='" + value.value + "'";
+            });
+            filterCondition += ")";
+        }
+
+        if (filterCondition === "("){
+            filterCondition = "";
+        }
+        return filterCondition;
+    }
+
     /**
      * Query is initialised after the user input is received
      */
@@ -151,46 +214,33 @@ class HTTPAnalyticsLatencyOverTime extends Widget {
         if (typeof this.state.perspective === 'number' && typeof this.state.per === 'string') {
             super.getWidgetChannelManager().unsubscribeWidget(this.props.id);
             let filterBy = '';
-            let filterCondition = 'on (';
+            let filterCondition = 'on ' + this.getFilterQuery();
             let groupBy = 'server';
             switch (this.state.perspective) {
                 case 0:
-                    groupBy = 'serverName';
-                    if (!this.state.selectedServiceValues.some(value => value.value === 'All')
-                        || this.state.selectedServiceValues.length !== 1) {
-                        this.state.selectedServiceValues.forEach((value) => {
-                            filterCondition += "serviceName=='" + value.value + "' or ";
-                        });
-                    }
-                    filterBy = 'serviceName,';
+                    groupBy  = "cellName";
+                    filterBy = "serverName,";
                     break;
                 case 1:
-                    groupBy = 'serviceName';
-                    if (!this.state.selectedServerValues.some(value => value.value === 'All')
-                        || this.state.selectedServerValues.length !== 1) {
-                        this.state.selectedServerValues.forEach((value) => {
-                            filterCondition += "serverName=='" + value.value + "' or ";
-                        });
-                    }
-                    filterBy = 'serverName,';
+                    groupBy = "serverName";
+                    filterBy = "serviceName,";
                     break;
                 case 2:
-                    if (this.state.selectedSingleServiceValue.value !== 'All') {
-                        filterCondition += "serviceName=='" + this.state.selectedSingleServiceValue.value + "' or ";
-                    }
-                    filterBy = 'serviceName,';
-                    groupBy = 'serviceMethod';
+                    groupBy = "serviceName";
+                    filterBy = "serviceMethod,";
+                    break;
+                case 3:
+                    groupBy = "serviceMethod";
+                    filterBy = "httpRespGroup,";
                     break;
                 default:
                     groupBy = 'serverName';
                     break;
             }
 
-            if (filterCondition.endsWith('on (')) {
+            if (filterCondition.endsWith('on ')) {
                 filterCondition = '';
                 filterBy = '';
-            } else {
-                filterCondition = filterCondition.slice(0, -3) + ')';
             }
 
             const dataProviderConfigs = _.cloneDeep(this.state.dataProviderConf);
