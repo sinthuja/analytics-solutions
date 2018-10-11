@@ -120,12 +120,13 @@ class OpenTracingVisTimeline extends Widget {
                 } else {
                     endTime = new Date(data[i][5] + 1000);
                 }
+                let spanName = data[i][4] + " ("+ (endTime - startTime) +" ms) ";
                 let item = {
                     type2: "span",
                     start: startTime,
                     end: endTime,
-                    content: data[i][4],
-                    title: data[i][4],
+                    content: spanName,
+                    title: spanName,
                     id: i + 1 + 0.1,
                     group: i + 1,
                 };
